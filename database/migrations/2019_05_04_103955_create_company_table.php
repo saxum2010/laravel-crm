@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSettingTable extends Migration
+class CreateCompanyTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class CreateSettingTable extends Migration
      */
     public function up()
     {
-        Schema::create('setting', function (Blueprint $table) {
+        Schema::create('company', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('setting_key');
-            $table->text('setting_value')->nullable();
+            $table->string('title');
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ class CreateSettingTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('setting');
+        Schema::dropIfExists('company');
     }
 }

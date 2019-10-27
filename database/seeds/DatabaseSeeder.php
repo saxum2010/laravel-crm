@@ -46,29 +46,12 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-
-        // insert the system main email into settings table
-        foreach (config('seed_data.settings') as $key => $value) {
-            DB::table('setting')->insert([
-                'setting_key' => $key,
-                'setting_value' => $value
-            ]);
-        }
-
         // insert sample user as the system admin
-        $user = DB::table('users')->insert([
+        DB::table('users')->insert([
            'name' => 'admin',
            'email' => 'admin@my-crm.com',
            'password' => bcrypt("admin"),
-           'position_title' => 'sales manager',
-           'is_admin' => 1
+           'parent_id' => 0
         ]);
-
-
-        // insert the permissions
-        $permissions = [];
-        foreach (config('seed_data.permissions') as $value) {
-            $permissions[] = \Spatie\Permission\Models\Permission::create(['name' => $value]);
-        }
     }
 }

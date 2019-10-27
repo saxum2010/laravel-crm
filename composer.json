@@ -9,7 +9,6 @@
         "fideloper/proxy": "~4.0",
         "laravel/framework": "5.6.*",
         "laravel/tinker": "~1.0",
-        "sayeed/custom-migrate": "^1.0",
         "spatie/laravel-permission": "^2.37"
     },
     "require-dev": {
@@ -28,10 +27,7 @@
         ],
         "psr-4": {
             "App\\": "app/"
-        },
-        "files": [
-            "app/Helpers/General.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {

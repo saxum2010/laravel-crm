@@ -1,7 +1,5 @@
 @extends('layout.app')
 
-@section('title', ' | Create %%modelName%%')
-
 @section('content')
 
     <section class="content-header">
@@ -10,7 +8,7 @@
         </h1>
         <ol class="breadcrumb">
             <li><a href="{{ url('/%%routeGroup%%') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-            <li><a href="{{ url('/%%routeGroup%%%%viewName%%') }}">%%crudNameCap%%</a></li>
+            <li class="{{ url('/%%routeGroup%%%%viewName%%') }}">%%crudNameCap%%</li>
             <li class="active">Create</li>
         </ol>
     </section>

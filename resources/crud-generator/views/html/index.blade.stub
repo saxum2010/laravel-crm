@@ -1,7 +1,5 @@
 @extends('layout.app')
 
-@section('title', ' | List %%crudNameCap%%')
-
 @section('content')
 
     <section class="content-header">
@@ -55,14 +53,14 @@
                                                 <form method="POST" action="{{ url('/%%routeGroup%%%%viewName%%' . '/' . $item->%%primaryKey%%) }}" accept-charset="UTF-8" style="display:inline">
                                                     {{ method_field('DELETE') }}
                                                     {{ csrf_field() }}
-                                                    <button type="submit" class="btn btn-danger btn-sm" title="Delete %%modelName%%" onclick="return confirm('Confirm delete?')"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" title="Delete %%modelName%%" onclick="return confirm(&quot;Confirm delete?&quot;)"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>
                                                 </form>
                                             </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
-                            <div class="pagination-wrapper"> {!! $%%crudName%%->appends(['search' => Request::get('search')])->render() !!} </div>
+                            <div class="pagination-wrapper"> {!! $contacts->appends(['search' => Request::get('search')])->render() !!} </div>
                         </div>
 
                     </div>
