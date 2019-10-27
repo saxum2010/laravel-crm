@@ -46,10 +46,14 @@ class ContactsController extends Controller
             $query->where('status', '=', ContactStatus::where('name', \request('status_name'))->first()->id);
         }
 
-        // if not is admin user
+        // if not admin user show contacts if assigned to or created by that user
         if(Auth::user()->is_admin == 0) {
 
-            $query->where('assigned_user_id', Auth::user()->id);
+            $query->where(function ($query) {
+                $query->where('assigned_user_id', Auth::user()->id)
+                    ->orWhere('created_by_id', Auth::user()->id);
+            });
+
         }
 
         $contacts = $query->paginate($perPage);
@@ -64,11 +68,9 @@ class ContactsController extends Controller
      */
     public function create()
     {
-        $statuses = ContactStatus::all();
+        $data = $this->getFormData();
 
-        $users = User::where('is_active', 1)->get();
-
-        $documents = Document::where('status', 1)->get();
+        list($statuses, $users, $documents) = $data;
 
         return view('pages.contacts.create', compact('statuses', 'users', 'documents'));
     }
@@ -160,15 +162,9 @@ class ContactsController extends Controller
      */
     public function edit($id)
     {
-        $contact = Contact::findOrFail($id);
+        $data = $this->getFormData($id);
 
-        $statuses = ContactStatus::all();
-
-        $users = User::where('is_active', 1)->get();
-
-        $documents = Document::where('status', 1)->get();
-
-        $selected_documents = $contact->documents()->pluck('document_id')->toArray();
+        list($statuses, $users, $documents, $contact, $selected_documents) = $data;
 
         return view('pages.contacts.edit', compact('contact', 'statuses', 'users', 'documents', 'selected_documents'));
     }
@@ -289,7 +285,9 @@ class ContactsController extends Controller
 
         Contact::destroy($id);
 
-        $this->mailer->sendDeleteContactEmail("Contact deleted", User::find($contact->assigned_user_id), $contact);
+        if(getSetting("enable_email_notification") == 1) {
+            $this->mailer->sendDeleteContactEmail("Contact deleted", User::find($contact->assigned_user_id), $contact);
+        }
 
         return redirect('admin/contacts')->with('flash_message', 'Contact deleted!');
     }
@@ -315,7 +313,9 @@ class ContactsController extends Controller
 
         $contact->update(['assigned_user_id' => $request->assigned_user_id]);
 
-        $this->mailer->sendAssignContactEmail("Contact assigned to you", User::find($request->assigned_user_id), $contact);
+        if(getSetting("enable_email_notification") == 1) {
+            $this->mailer->sendAssignContactEmail("Contact assigned to you", User::find($request->assigned_user_id), $contact);
+        }
 
         return redirect('admin/contacts')->with('flash_message', 'Contact assigned!');
     }
@@ -399,5 +399,73 @@ class ContactsController extends Controller
 
             $contactDocument->save();
         }
+    }
+
+
+    /**
+     * get form data for the contacts form
+     *
+     *
+     *
+     * @param null $id
+     * @return array
+     */
+    protected function getFormData($id = null)
+    {
+        $statuses = ContactStatus::all();
+
+        $users = User::where('is_active', 1)->get();
+
+        if(Auth::user()->is_admin == 1) {
+            $documents = Document::where('status', 1)->get();
+        } else {
+            $super_admin = User::where('is_admin', 1)->first();
+
+            $documents = Document::where('status', 1)->where(function ($query) use ($super_admin) {
+                $query->where('created_by_id', Auth::user()->id)
+                    ->orWhere('assigned_user_id', Auth::user()->id)
+                    ->orWhere('created_by_id', $super_admin->id)
+                    ->orWhere('assigned_user_id', $super_admin->id);
+            })->get();
+        }
+
+        if($id == null) {
+
+            return [$statuses, $users, $documents];
+        }
+
+        $contact = Contact::findOrFail($id);
+
+        $selected_documents = $contact->documents()->pluck('document_id')->toArray();
+
+        return [$statuses, $users, $documents, $contact, $selected_documents];
+    }
+
+
+    /**
+     * get Contacts By Status
+     *
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function getContactsByStatus(Request $request)
+    {
+        if(!$request->status)
+            return [];
+
+
+        $contacts = Contact::where('contact_status.name', $request->status)
+            ->join('contact_status', 'contact_status.id', '=', 'contact.status');
+
+        if(Auth::user()->is_admin == 1) {
+
+            return $contacts->get();
+        }
+
+        return $contacts->where(function ($query) {
+            $query->where('assigned_user_id', Auth::user()->id)
+                  ->orWhere('created_by_id', Auth::user()->id);
+        })->get();
     }
 }

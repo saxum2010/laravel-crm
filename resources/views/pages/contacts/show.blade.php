@@ -68,8 +68,9 @@
                                     @if(\Auth::user()->is_admin == 1)
                                         <tr><th> Created by </th><td>{{ $contact->createdBy->name }}</td></tr>
                                         <tr><th> Modified by </th><td>{{ isset($contact->modifiedBy->name)?$contact->modifiedBy->name:"" }}</td></tr>
-                                        <tr><th> Assigned to </th><td>{{ $contact->assignedTo != null ?$contact->assignedTo->name : "" }}</td></tr>
                                     @endif
+
+                                    <tr><th> Assigned to </th><td>{{ $contact->assignedTo != null ?$contact->assignedTo->name : "not set" }}</td></tr>
                                     <tr><th> Created at </th><td>{{ $contact->created_at }}</td></tr>
                                     <tr><th> Modified at </th><td>{{ $contact->updated_at }}</td></tr>
                                     @if($contact->emails->count() > 0)
@@ -83,6 +84,19 @@
                                     @endif
                                 </tbody>
                             </table>
+                            @if($contact->tasks->count() > 0)
+                                <h3>Tasks related to contact</h3>
+                                <table class="table">
+                                    <tr><th>Task</th><th>View</th></tr>
+                                    @foreach($contact->tasks as $task)
+                                        <tr>
+                                            <td>{{ $task->name }}</td>
+                                            <td><a href="{{ url('/admin/tasks/' . $task->id) }}" class="btn btn-info btn-sm"> <i class="fa fa-camera"></i> </a></td>
+                                        </tr>
+                                    @endforeach
+                                </table>
+                            @endif
+
                         </div>
 
                     </div>
