@@ -42,6 +42,10 @@ class TasksController extends Controller
             $query = Task::latest();
         }
 
+        if(\request('assigned_user_id') != null) {
+            $query->where('assigned_user_id', \request('assigned_user_id'));
+        }
+
         // if not admin user show tasks if assigned to or created by that user
         if(Auth::user()->is_admin == 0) {
 
@@ -351,7 +355,9 @@ class TasksController extends Controller
     protected function do_validate($request)
     {
         $this->validate($request, [
-            'name' => 'required'
+            'name' => 'required',
+            'start_date' => 'nullable|date',
+            'end_date'   => 'nullable|date|after_or_equal:start_date'
         ]);
     }
 

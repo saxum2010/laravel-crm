@@ -64,6 +64,26 @@ function getSetting($key)
 
 
 /**
+ * check directory exists and try to create it
+ *
+ *
+ * @param $directory
+ */
+function checkDirectory($directory)
+{
+    try {
+        if (!file_exists(public_path('uploads/' . $directory))) {
+            mkdir(public_path('uploads/' . $directory));
+
+            chmod(public_path('uploads/' . $directory), 0777);
+        }
+    } catch (\Exception $e) {
+        die($e->getMessage());
+    }
+}
+
+
+/**
  * check if user has permission
  *
  *
@@ -101,4 +121,35 @@ function getUnreadMessages()
         ->get();
 
     return $messages;
+}
+
+
+/**
+ * getContacts
+ *
+ *
+ * @param null $status
+ * @return \Illuminate\Database\Eloquent\Collection|static[]
+ */
+function getContacts($status = null)
+{
+    if(!$status)
+        return \App\Models\Contact::all();
+
+    return \App\Models\Contact::join('contact_status', 'contact_status.id', '=', 'contact.status')
+        ->where('contact_status.name', $status)
+        ->get();
+
+}
+
+
+/**
+ * get Users
+ *
+ *
+ * @return mixed
+ */
+function getUsers()
+{
+    return \App\User::where('is_admin', 0)->where('is_active', 1)->get();
 }
