@@ -1,6 +1,6 @@
 
 # Mini CRM
-This is a repository of the crm system with laravel. Try to follow the tutorial series carefully on [Webmobtuts.com](http://webmobtuts.com)
+This is a repository of the crm system with laravel.
 
 ## Getting started
 
