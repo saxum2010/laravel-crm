@@ -22,31 +22,12 @@ class Administrator
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next, $permission = null)
+    public function handle($request, Closure $next)
     {
-        if($this->auth->user()->is_admin == 1) {
-            return $next($request);
-        } else {
-            if($permission != null && ($permission_parts = explode("|", $permission))) {
-
-                $action_permission_array = array_filter($permission_parts, function ($value) use ($request) {
-                   return ($parts = explode("-", $value)) && $parts[0] == $request->route()->getActionMethod();
-                });
-
-                if($action_permission_array && count($action_permission_array)) {
-
-                    $action_permission = array_pop($action_permission_array);
-
-                    $parts = explode("-", $action_permission);
-
-                    if(isset($parts[1]) && $this->auth->user()->can($parts[1])) {
-
-                        return $next($request);
-                    }
-                }
-            }
+        if($this->auth->user()->is_admin == 0) {
+            return redirect('/admin/forbidden/admin-only');
         }
 
-        return redirect('/admin/forbidden');
+        return $next($request);
     }
 }

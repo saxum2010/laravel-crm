@@ -76,9 +76,6 @@ class UsersController extends Controller
         $requestData['is_active'] = isset($requestData['is_active'])?1:0;
 
         if ($request->hasFile('image')) {
-
-            checkDirectory("users");
-
             $requestData['image'] = uploadFile($request, 'image', public_path('uploads/users'));
         }
 
@@ -139,15 +136,10 @@ class UsersController extends Controller
         $requestData = $request->except(['_token']);
 
         if ($request->hasFile('image')) {
-
-            checkDirectory("users");
-
             $requestData['image'] = uploadFile($request, 'image', public_path('uploads/users'));
         }
 
         $user = User::findOrFail($id);
-
-        $old_is_active = $user->is_active;
 
         if($user->is_admin == 0) {
             $requestData['is_active'] = isset($requestData['is_active']) ? 1 : 0;
@@ -157,9 +149,9 @@ class UsersController extends Controller
 
 
         // send notification email
-        if($user->is_admin == 0 && getSetting("enable_email_notification") == 1 && $requestData['is_active'] != $old_is_active) {
+        if($user->is_admin == 0) {
 
-            if($requestData['is_active'] == 1) {
+            if($user->is_active == 1) {
                 $subject = "Your mini crm account have been activated";
             } else {
                 $subject = "Your mini crm account have been deactivated";
@@ -219,17 +211,12 @@ class UsersController extends Controller
         $requestData = $request->except(['_token']);
 
         if ($request->hasFile('image')) {
-
-            checkDirectory("users");
-
             $requestData['image'] = uploadFile($request, 'image', public_path('uploads/users'));
         }
 
         if(!empty($requestData['password'])) {
 
             $requestData['password'] = bcrypt($requestData['password']);
-        } else {
-            unset($requestData['password']);
         }
 
         $user = User::findOrFail($id);
@@ -257,16 +244,10 @@ class UsersController extends Controller
 
         $user = User::findOrFail($id);
 
-        $old_roles = $user->roles();
-
         $user->syncRoles($request->role_id);
 
-
-        // send role update notification
-        if(getSetting("enable_email_notification") == 1 && $old_roles->count() > 0 && is_array($old_roles) && $old_roles[0]->id != $request->role_id) {
-            // send notify email
-            $this->mailer->sendUpdateRoleEmail("Your mini crm account have updated role", $user);
-        }
+        // send notify email
+        $this->mailer->sendUpdateRoleEmail("Your mini crm account have updated role", $user);
 
         return redirect('admin/users')->with('flash_message', 'Role updated!');
     }

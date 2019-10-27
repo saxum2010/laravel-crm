@@ -17,7 +17,27 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
         return view('pages.home.index');
     });
 
+    Route::resource('/users', 'UsersController');
+
+    Route::get('/my-profile', 'UsersController@getProfile');
+
+    Route::get('/my-profile/edit', 'UsersController@getEditProfile');
+
+    Route::patch('/my-profile/edit', 'UsersController@postEditProfile');
+
+    Route::resource('/permissions', 'PermissionsController');
+
+    Route::resource('/roles', 'RolesController');
+
+    Route::get('/users/role/{id}', 'UsersController@getRole');
+
+    Route::put('/users/role/{id}', 'UsersController@updateRole');
+
     Route::resource('/contacts', 'ContactsController');
+
+    Route::get('/forbidden/admin-only', function () {
+        return view('pages.forbidden.admin_area');
+    });
 });
 
 Route::get('/', function () {

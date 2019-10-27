@@ -2,7 +2,7 @@
 <html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
-    <title>CRM</title>
+    <title>CRM @yield('title')</title>
 
     @include('layout.styles')
 
@@ -21,7 +21,6 @@
 
     @include('layout.footer')
 
+    @yield('scripts')
 </body>
-
-@yield('scripts')
 </html>
