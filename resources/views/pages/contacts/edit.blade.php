@@ -1,5 +1,7 @@
 @extends('layout.app')
 
+@section('title', ' | Edit contact')
+
 @section('content')
 
 
@@ -9,7 +11,7 @@
         </h1>
         <ol class="breadcrumb">
             <li><a href="{{ url('/admin/') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-            <li class="{{ url('/admin/contacts') }}">Contacts</li>
+            <li><a href="{{ url('/admin/contacts') }}">Contacts</a></li>
             <li class="active">Edit</li>
         </ol>
     </section>
@@ -45,3 +47,9 @@
         </div>
     </section>
 @endsection
+
+@section('scripts')
+
+    <script type="text/javascript" src="{{ url('theme/views/contacts/form.js') }}"></script>
+
+@stop

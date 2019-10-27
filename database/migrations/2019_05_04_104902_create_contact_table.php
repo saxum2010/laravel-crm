@@ -16,14 +16,14 @@ class CreateContactTable extends Migration
         Schema::create('contact', function (Blueprint $table) {
             $table->increments('id');
             $table->string('first_name');
-            $table->string('middle_name');
+            $table->string('middle_name')->nullable();
             $table->string('last_name');
             $table->integer('status');
             $table->string('referral_source')->nullable();
             $table->string('position_title')->nullable();
             $table->string('industry')->nullable();
             $table->string('project_type')->nullable();
-            $table->text('project_description');
+            $table->text('project_description')->nullable();
             $table->string('company')->nullable();
             $table->text('description')->nullable();
             $table->string('budget')->nullable();
@@ -36,7 +36,7 @@ class CreateContactTable extends Migration
             $table->string('address_zipcode')->nullable();
             $table->integer('created_by_id')->unsigned();
             $table->integer('modified_by_id')->unsigned()->nullable();
-            $table->integer('assigned_user_id')->unsigned();
+            $table->integer('assigned_user_id')->unsigned()->nullable();
 
             $table->timestamps();
             $table->softDeletes();
